@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spotitransfer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green: #1DB954;
+      --green-dim: #158a3e;
+      --red: #FF4444;
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #1a1a1a;
+      --surface3: #222222;
+      --border: rgba(255,255,255,0.07);
+      --text: #f0f0f0;
+      --muted: #666;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Outfit', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Ambient glow background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(29,185,84,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -200px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(29,185,84,0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: relative; z-index: 10;
+      padding: 28px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 6px var(--green); transform: scale(1); }
+      50% { box-shadow: 0 0 16px var(--green); transform: scale(1.2); }
+    }
+
+    #user-badge {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    #user-badge .avatar {
+      width: 32px; height: 32px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #000;
+    }
+
+    /* ─── MAIN ─── */
+    main {
+      position: relative; z-index: 5;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+
+    /* ─── LANDING / LOGIN ─── */
+    #screen-login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 75vh;
+      text-align: center;
+      gap: 32px;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 8px 0;
+    }
+
+    .flow-badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flow-arrow {
+      color: var(--green);
+      font-size: 1.2rem;
+    }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: #000;
+      padding: 14px 36px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #22d660;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(29,185,84,0.35);
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      padding: 10px 24px;
+      font-size: 0.875rem;
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface3);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .btn-transfer {
+      background: linear-gradient(135deg, var(--green), #22d660);
+      color: #000;
+      padding: 16px 40px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .btn-transfer:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(29,185,84,0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ─── SCREENS ─── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ─── SECTION HEADER ─── */
+    .section-header {
+      margin: 48px 0 24px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .section-count {
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    /* ─── PLAYLIST GRID ─── */
+    #playlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .playlist-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .playlist-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(29,185,84,0.08), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .playlist-card:hover::before { opacity: 1; }
+    .playlist-card:hover {
+      border-color: rgba(29,185,84,0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .playlist-card.selected {
+      border-color: var(--green);
+      background: rgba(29,185,84,0.08);
+    }
+
+    .playlist-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 22px; height: 22px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #000;
+      font-weight: 700;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    .playlist-img {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      object-fit: cover;
+      margin-bottom: 12px;
+      background: var(--surface3);
+    }
+
+    .playlist-img-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      background: var(--surface3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 12px;
+    }
+
+    .playlist-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .playlist-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ─── TRACK PREVIEW ─── */
+    #track-preview-panel {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 24px;
+    }
+
+    .preview-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .preview-playlist-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .preview-img {
+      width: 52px; height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--surface3);
+    }
+
+    .preview-playlist-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .preview-playlist-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .track-list {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .track-list::-webkit-scrollbar { width: 4px; }
+    .track-list::-webkit-scrollbar-track { background: transparent; }
+    .track-list::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 4px; }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 24px;
+      transition: background 0.15s;
+    }
+
+    .track-item:hover { background: var(--surface2); }
+
+    .track-num {
+      width: 24px;
+      text-align: right;
+      color: var(--muted);
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .track-info { flex: 1; min-width: 0; }
+
+    .track-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .track-duration {
+      font-size: 0.75rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    /* ─── TRANSFER ACTION BAR ─── */
+    #action-bar {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 20px 48px;
+      z-index: 100;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .action-bar-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .action-bar-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .action-bar-meta {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    /* ─── PROGRESS SCREEN ─── */
+    #screen-transfer {
+      max-width: 640px;
+      margin: 0 auto;
+      padding-top: 60px;
+    }
+
+    .transfer-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .transfer-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 48px;
+    }
+
+    .progress-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+    }
+
+    .progress-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .progress-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .progress-numbers {
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      color: var(--green);
+    }
+
+    .progress-bar-track {
+      width: 100%;
+      height: 6px;
+      background: var(--surface3);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), #22d660);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+      width: 0%;
+      position: relative;
+    }
+
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 0;
+      width: 20px; height: 100%;
+      background: rgba(255,255,255,0.3);
+      border-radius: 99px;
+      animation: shimmer 1s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    .progress-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.875rem;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+
+    .progress-step.active { color: var(--text); }
+    .progress-step.done { color: var(--green); }
+
+    .step-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .progress-step.active .step-icon {
+      background: rgba(29,185,84,0.15);
+      border-color: var(--green);
+      color: var(--green);
+      animation: spin 1.5s linear infinite;
+    }
+
+    .progress-step.done .step-icon {
+      background: var(--green);
+      border-color: var(--green);
+      color: #000;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ─── RESULT ─── */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-top: 24px;
+    }
+
+    .result-success {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .result-icon {
+      width: 52px; height: 52px;
+      background: rgba(29,185,84,0.15);
+      border: 1px solid var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .result-main-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .result-main-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-box {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .not-found-list {
+      background: rgba(255,68,68,0.06);
+      border: 1px solid rgba(255,68,68,0.2);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .not-found-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--red);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .not-found-item {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .not-found-item:last-child { border-bottom: none; }
+
+    /* ─── LOADING SKELETON ─── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-shine 1.5s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes skeleton-shine {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ─── TOAST ─── */
+    #toast {
+      position: fixed;
+      bottom: 100px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      header { padding: 20px 24px; }
+      main { padding: 0 24px 100px; }
+      #action-bar { padding: 16px 24px; }
+      #playlist-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .hero-title { font-size: 2.4rem; }
+      .flow-diagram { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    Spotitransfer
+  </div>
+  <div id="user-badge">
+    <div class="avatar" id="user-avatar">?</div>
+    <span id="user-name">—</span>
+    <a href="#" onclick="spotifyLogout()" style="margin-left:8px;font-size:0.75rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:50px;padding:4px 10px">Spotify Çıkış</a>
+    <a href="/logout/youtube" style="margin-left:4px;font-size:0.75rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:50px;padding:4px 10px">YouTube Çıkış</a>
+</div>
+</header>
+
+<main>
+
+  <!-- ── LOGIN SCREEN ── -->
+  <div id="screen-login" class="screen active">
+    <h1 class="hero-title">
+      <span style="color:#1DB954">Spotify</span>'dan<br><span style="color:#FF0000">YouTube Music</span>'e<br>tek tıkla.
+    </h1>
+    <p class="hero-sub">Playlistlerini seç, gerisini biz halledelim. Şarkı şarkı arar, aynı adla yeni playlist oluşturur.</p>
+    <div class="flow-diagram">
+      <div class="flow-badge">🎵 Spotify</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-badge">🔍 Eşleştir</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-badge">▶️ YouTube Music</div>
+    </div>
+
+    <!-- 2 adımlı bağlantı -->
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;margin-top:8px">
+      <div id="step-spotify-btn">
+        <button class="btn btn-primary" onclick="spotifyLogin()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+          Spotify ile Bağlan
+        </button>
+        <script>
+        function spotifyLogin() {
+            // Önce Spotify'dan çıkış yap, sonra login'e yönlendir
+            const logout = window.open('https://www.spotify.com/logout/', '_blank');
+            setTimeout(() => {
+                if (logout) logout.close();
+                location.href = '/login/spotify';
+            }, 1500);
+        }
+        </script>
+      </div>
+      <div id="step-youtube-btn" style="display:none">
+        <button class="btn btn-primary" style="background:#FF0000" onclick="location.href='/login/youtube'">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          YouTube ile Bağlan
+        </button>
+      </div>
+    </div>
+
+    <!-- Bağlantı durumu -->
+    <div id="auth-status" style="display:none;margin-top:20px;display:flex;gap:16px;justify-content:center">
+      <div id="badge-spotify" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:8px 16px;font-size:0.8rem;align-items:center;gap:8px">
+        <span style="color:var(--green)">✓</span> Spotify bağlandı
+      </div>
+      <div id="badge-youtube" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:50px;padding:8px 16px;font-size:0.8rem;align-items:center;gap:8px">
+        <span style="color:#FF0000">✓</span> YouTube bağlandı
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PLAYLIST SCREEN ── -->
+  <div id="screen-playlists" class="screen">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Playlistlerin</div>
+        <div class="section-count" id="playlist-count">Yükleniyor...</div>
+      </div>
+    </div>
+
+    <div id="playlist-grid">
+      <!-- Skeleton loaders -->
+      <div style="background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border)">
+        <div class="skeleton" style="width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:12px"></div>
+        <div class="skeleton" style="height:14px;border-radius:4px;margin-bottom:6px;width:80%"></div>
+        <div class="skeleton" style="height:11px;border-radius:4px;width:50%"></div>
+      </div>
+      <div style="background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border)">
+        <div class="skeleton" style="width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:12px"></div>
+        <div class="skeleton" style="height:14px;border-radius:4px;margin-bottom:6px;width:70%"></div>
+        <div class="skeleton" style="height:11px;border-radius:4px;width:45%"></div>
+      </div>
+      <div style="background:var(--surface);border-radius:12px;padding:16px;border:1px solid var(--border)">
+        <div class="skeleton" style="width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:12px"></div>
+        <div class="skeleton" style="height:14px;border-radius:4px;margin-bottom:6px;width:90%"></div>
+        <div class="skeleton" style="height:11px;border-radius:4px;width:55%"></div>
+      </div>
+    </div>
+
+    <!-- Track preview panel -->
+    <div id="track-preview-panel">
+      <div class="preview-header">
+        <div class="preview-playlist-info">
+          <img id="preview-img" class="preview-img" src="" alt="" onerror="this.style.display='none'"/>
+          <div>
+            <div class="preview-playlist-name" id="preview-name">—</div>
+            <div class="preview-playlist-sub" id="preview-sub">— şarkı</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary" onclick="closePreview()">✕ Kapat</button>
+      </div>
+      <div class="track-list" id="track-list">
+        <div style="padding:40px;text-align:center;color:var(--muted);font-size:0.875rem">Şarkılar yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TRANSFER SCREEN ── -->
+  <div id="screen-transfer" class="screen">
+    <div class="transfer-title">Aktarılıyor</div>
+    <div class="transfer-sub" id="transfer-playlist-name">—</div>
+
+    <div class="progress-card">
+      <div class="progress-stats">
+        <span class="progress-label">İlerleme</span>
+        <span class="progress-numbers" id="progress-text">0 / 0</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+      <div class="progress-steps">
+        <div class="progress-step done" id="step-connect">
+          <div class="step-icon">✓</div>
+          Spotify bağlantısı kuruldu
+        </div>
+        <div class="progress-step active" id="step-search">
+          <div class="step-icon">↻</div>
+          YouTube Music'te şarkılar aranıyor
+        </div>
+        <div class="progress-step" id="step-create">
+          <div class="step-icon">3</div>
+          Playlist oluşturuluyor
+        </div>
+        <div class="progress-step" id="step-add">
+          <div class="step-icon">4</div>
+          Şarkılar ekleniyor
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESULT SCREEN ── -->
+  <div id="screen-result" class="screen">
+    <div class="result-card" style="max-width:600px;margin:60px auto 0">
+      <div class="result-success">
+        <div class="result-icon">✅</div>
+        <div>
+          <div class="result-main-title">Aktarım tamamlandı!</div>
+          <div class="result-main-sub" id="result-playlist-name">—</div>
+        </div>
+      </div>
+      <div class="result-stats">
+        <div class="stat-box">
+          <div class="stat-num" id="stat-transferred">0</div>
+          <div class="stat-label">Aktarılan şarkı</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" id="stat-not-found" style="color:var(--red)">0</div>
+          <div class="stat-label">Bulunamayan şarkı</div>
+        </div>
+      </div>
+      <div id="not-found-section" style="display:none">
+        <div class="not-found-list">
+          <div class="not-found-title">⚠️ Bulunamayan şarkılar</div>
+          <div id="not-found-items"></div>
+        </div>
+      </div>
+      <div style="margin-top:24px;display:flex;gap:12px">
+        <button class="btn btn-primary" onclick="goBack()">← Yeni Aktarım</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Action Bar -->
+<div id="action-bar">
+  <div class="action-bar-info">
+    <div>
+      <div class="action-bar-name" id="action-name">—</div>
+      <div class="action-bar-meta" id="action-meta">— şarkı seçildi</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="btn btn-secondary" id="btn-preview" onclick="togglePreview()">👁 Önizle</button>
+    <button class="btn btn-transfer" id="btn-transfer" onclick="startTransfer()">
+      ▶ YouTube Music'e Aktar
+    </button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  let selectedPlaylist = null;
+  let loadedTracks = [];
+  let pollInterval = null;
+
+  // ─── SCREEN MANAGEMENT ───
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ─── TOAST ───
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ─── LOAD PLAYLISTS ───
+  async function loadPlaylists() {
+    const res = await fetch('/api/playlists');
+    if (res.status === 401) { showScreen('screen-login'); return; }
+    const data = await res.json();
+
+    // Show user badge
+    const badge = document.getElementById('user-badge');
+    badge.style.display = 'flex';
+    document.getElementById('user-name').textContent = data.user;
+    document.getElementById('user-avatar').textContent = data.user[0].toUpperCase();
+
+    document.getElementById('playlist-count').textContent = `${data.playlists.length} playlist`;
+
+    const grid = document.getElementById('playlist-grid');
+    grid.innerHTML = '';
+    data.playlists.forEach(pl => {
+      const card = document.createElement('div');
+      card.className = 'playlist-card';
+      card.dataset.id = pl.id;
+      card.dataset.name = pl.name;
+      card.dataset.count = pl.track_count;
+      card.dataset.image = pl.image || '';
+
+      const imgHtml = pl.image
+        ? `<img class="playlist-img" src="${pl.image}" alt="" loading="lazy"/>`
+        : `<div class="playlist-img-placeholder">🎵</div>`;
+
+      card.innerHTML = `
+        ${imgHtml}
+        <div class="playlist-name">${pl.name}</div>
+      `;
+      card.addEventListener('click', () => selectPlaylist(card, pl));
+      grid.appendChild(card);
+    });
+
+    showScreen('screen-playlists');
+  }
+
+  // ─── SELECT PLAYLIST ───
+  function selectPlaylist(card, pl) {
+    document.querySelectorAll('.playlist-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedPlaylist = pl;
+    loadedTracks = [];
+
+    document.getElementById('action-name').textContent = pl.name;
+    document.getElementById('action-meta').textContent = `${pl.track_count} şarkı`;
+    document.getElementById('action-bar').style.display = 'flex';
+
+    // Close preview if open
+    closePreview();
+  }
+
+  // ─── PREVIEW ───
+  async function togglePreview() {
+    const panel = document.getElementById('track-preview-panel');
+    if (panel.style.display === 'block') {
+      closePreview();
+    } else {
+      await openPreview();
+    }
+  }
+
+  async function openPreview() {
+    if (!selectedPlaylist) return;
+    const panel = document.getElementById('track-preview-panel');
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    document.getElementById('preview-name').textContent = selectedPlaylist.name;
+    document.getElementById('preview-sub').textContent = `${selectedPlaylist.track_count} şarkı`;
+    const img = document.getElementById('preview-img');
+    if (selectedPlaylist.image) {
+      img.src = selectedPlaylist.image;
+      img.style.display = 'block';
+    } else {
+      img.style.display = 'none';
+    }
+
+    if (loadedTracks.length === 0) {
+      const list = document.getElementById('track-list');
+      list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--muted);font-size:0.875rem">Şarkılar yükleniyor...</div>';
+
+      const res = await fetch(`/api/playlist/${selectedPlaylist.id}/tracks`);
+      const data = await res.json();
+      loadedTracks = data.tracks;
+      renderTrackList(data.tracks);
+    }
+    document.getElementById('preview-sub').textContent = `${loadedTracks.length} şarkı`;
+    document.getElementById('action-meta').textContent = `${loadedTracks.length} şarkı`;
+  }
+
+  function closePreview() {
+    document.getElementById('track-preview-panel').style.display = 'none';
+  }
+
+  function renderTrackList(tracks) {
+    const list = document.getElementById('track-list');
+    list.innerHTML = tracks.map((t, i) => `
+      <div class="track-item">
+        <div class="track-num">${i + 1}</div>
+        <div class="track-info">
+          <div class="track-name">${t.name}</div>
+          <div class="track-artist">${t.artist} · ${t.album}</div>
+        </div>
+        <div class="track-duration">${formatDuration(t.duration)}</div>
+      </div>
+    `).join('');
+  }
+
+  function formatDuration(ms) {
+    const s = Math.floor(ms / 1000);
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }
+
+  // ─── TRANSFER ───
+  async function startTransfer() {
+    if (!selectedPlaylist) return;
+
+    // Load tracks if not loaded
+    if (loadedTracks.length === 0) {
+      showToast('Şarkılar yükleniyor...');
+      const res = await fetch(`/api/playlist/${selectedPlaylist.id}/tracks`);
+      const data = await res.json();
+      loadedTracks = data.tracks;
+    }
+
+    showScreen('screen-transfer');
+    document.getElementById('action-bar').style.display = 'none';
+    document.getElementById('transfer-playlist-name').textContent = `"${selectedPlaylist.name}" · ${loadedTracks.length} şarkı`;
+
+    const res = await fetch('/api/transfer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        playlist_name: selectedPlaylist.name,
+        tracks: loadedTracks
+      })
+    });
+
+    const { job_id } = await res.json();
+    pollTransferStatus(job_id, loadedTracks.length);
+  }
+
+  function pollTransferStatus(jobId, total) {
+    let step = 1;
+    pollInterval = setInterval(async () => {
+      const res = await fetch(`/api/transfer/status/${jobId}`);
+      const s = await res.json();
+
+      const pct = total > 0 ? (s.done / total) * 100 : 0;
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-text').textContent = `${s.done} / ${total}`;
+
+      // Update steps
+      if (s.done > 0 && step < 2) {
+        step = 2;
+        setStep('step-search', 'active');
+      }
+      if (s.done >= total && step < 3) {
+        step = 3;
+        setStep('step-search', 'done');
+        setStep('step-create', 'active');
+      }
+      if (s.playlist_id && step < 4) {
+        step = 4;
+        setStep('step-create', 'done');
+        setStep('step-add', 'active');
+      }
+
+      if (s.status === 'done') {
+        clearInterval(pollInterval);
+        setStep('step-add', 'done');
+        setTimeout(() => showResult(s, total), 600);
+      } else if (s.status === 'error') {
+        clearInterval(pollInterval);
+        showToast('❌ Aktarım sırasında hata oluştu: ' + s.error);
+      }
+    }, 800);
+  }
+
+  function setStep(id, state) {
+    const el = document.getElementById(id);
+    el.classList.remove('active', 'done');
+    if (state) el.classList.add(state);
+    if (state === 'done') el.querySelector('.step-icon').textContent = '✓';
+    if (state === 'active') el.querySelector('.step-icon').textContent = '↻';
+  }
+
+  function showResult(s, total) {
+    showScreen('screen-result');
+    const transferred = total - s.not_found.length;
+    document.getElementById('result-playlist-name').textContent = selectedPlaylist.name;
+    document.getElementById('stat-transferred').textContent = transferred;
+    document.getElementById('stat-not-found').textContent = s.not_found.length;
+
+    if (s.not_found.length > 0) {
+      const section = document.getElementById('not-found-section');
+      section.style.display = 'block';
+      document.getElementById('not-found-items').innerHTML = s.not_found
+        .map(t => `<div class="not-found-item">${t}</div>`)
+        .join('');
+    }
+  }
+
+  function goBack() {
+    selectedPlaylist = null;
+    loadedTracks = [];
+    showScreen('screen-playlists');
+  }
+
+  function spotifyLogout() {
+    window.location.href = '/logout/spotify';
+  }
+
+  // ─── AUTH STATUS ───
+  async function checkAuthStatus() {
+    const res = await fetch('/api/auth/status');
+    const data = await res.json();
+
+    const spotifyOk = data.spotify;
+    const youtubeOk = data.youtube;
+
+    if (spotifyOk) {
+        document.getElementById('badge-spotify').style.display = 'flex';
+        document.getElementById('auth-status').style.display = 'flex';
+    }
+    if (youtubeOk) {
+        document.getElementById('badge-youtube').style.display = 'flex';
+        document.getElementById('auth-status').style.display = 'flex';
+    }
+
+    if (spotifyOk && youtubeOk) {
+        // Her ikisi bağlı — butonları gizle, playlist ekranına geç
+        document.getElementById('step-spotify-btn').style.display = 'none';
+        document.getElementById('step-youtube-btn').style.display = 'none';
+        loadPlaylists();
+    } else if (!spotifyOk) {
+        document.getElementById('step-spotify-btn').style.display = 'block';
+        document.getElementById('step-youtube-btn').style.display = 'none';
+        showScreen('screen-login');
+    } else {
+        document.getElementById('step-spotify-btn').style.display = 'none';
+        document.getElementById('step-youtube-btn').style.display = 'block';
+        showScreen('screen-login');
+    }
+  }
+
+  // ─── INIT ───
+  window.addEventListener('DOMContentLoaded', () => {
+    checkAuthStatus();
+  });
+</script>
+
+</body>
+</html>

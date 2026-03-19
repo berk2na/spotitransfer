@@ -1,0 +1,28 @@
+# Environment variables
+.env
+
+# Google OAuth token
+oauth.json
+
+# Spotify cache
+.spotify_cache
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -77,8 +77,6 @@ SECRET_KEY=your_random_secret_key
 python app.py
 ```
 
-Visit `http://127.0.0.1:5000` in your browser.
-
 ## Usage
 
 1. Click **Connect with Spotify** and log in
@@ -171,8 +169,6 @@ SECRET_KEY=rastgele_uzun_bir_anahtar
 ```bash
 python app.py
 ```
-
-Tarayıcıdan `http://127.0.0.1:5000` adresine git.
 
 ## Kullanım
 
